@@ -4,13 +4,14 @@ import './VerifierDashboard.css';
 import { ShieldCheck, Clock, FileSignature } from 'lucide-react';
 import type { Application } from '@milepost/program';
 import type { Client as AttestClient } from '@milepost/attest';
-import { useContractRead, useContractResult, useProgramme, useTransaction, phaseLabel } from '../hooks';
+import { useContractRead, useContractResult, useIndexedList, useProgramme, useTransaction, phaseLabel } from '../hooks';
 import { useWallet } from '../context/useWallet';
 import { useSoroban } from '../context/useSoroban';
 import { DEMO_PROGRAMME_ID } from '../context/sorobanStore';
 import { formatAmount, formatExact, tryParseAmount } from '../lib/amount';
 import { truncateAddress } from '../lib/format';
 import { explain } from '../lib/errors';
+import { fetchAwards } from '../lib/indexer';
 import { AsyncView, Empty, ErrorState, Loading, Success } from '../components/state/AsyncStates';
 import { PausedBanner } from '../components/programme/PausedBanner';
 import { Badge, Button, DateField, Field, Modal, Table, type Column } from '../components/ui';
@@ -19,16 +20,6 @@ const DEMO_APPLICANT = 'GAH3D4RM45ETE4W7VDRCWZBPRPT63CJXAGXFYVBC2FGANBZTS4OTKXCA
 
 const STELLAR_ADDRESS = /^G[A-Z2-7]{55}$/;
 const HEX_32_BYTES = /^(0x)?[0-9a-fA-F]{64}$/;
-
-/**
- * There is no on-chain list of awards — see docs/frontend-integration.md. Until
- * an indexer queries the `Awarded` events, the queue is built from known
- * recipient addresses, pre-seeded on the demo/testnet programme the way the
- * recipient picker seeds its payees.
- */
-const KNOWN_RECIPIENTS: Record<string, string[]> = {
-  [DEMO_PROGRAMME_ID]: ['GAH3D4RM45ETE4W7VDRCWZBPRPT63CJXAGXFYVBC2FGANBZTS4OTKXCA'],
-};
 
 interface Milestone {
   recipient: string;
@@ -622,13 +613,25 @@ function ProgrammeQueue({
   attest: AttestClient;
   onAttended: (record: AttestRecord) => void;
 }) {
-  const recipients = KNOWN_RECIPIENTS[programmeId] ?? [];
   const [tick, setTick] = useState(0);
 
   const isVerifier = useContractRead(
     () => client.is_verifier({ addr: verifier ?? '' }),
     [client, verifier],
     { enabled: Boolean(verifier) },
+  );
+
+  // Who might be waiting comes from the published index, because the contract
+  // keeps no list of awards. Fetched only once the account is a verifier, so a
+  // visitor's screen makes no request it cannot use. Every entry is read back
+  // from the contract below, so a stale or wrong list costs an extra read and
+  // can never put a false award on screen.
+  const indexed = useIndexedList(() => fetchAwards(programmeId), [programmeId], {
+    enabled: isVerifier.data === true,
+  });
+  const recipients = useMemo(
+    () => (indexed.data ?? []).map((award) => award.recipient),
+    [indexed.data],
   );
 
   // Fetched only for the account that is verified, in one pass so the whole
@@ -669,11 +672,10 @@ function ProgrammeQueue({
     return () => {
       cancelled = true;
     };
-    // `recipients` is a module-constant list per programme, so the dependency
-    // stays on the programme id and the effect only refetches when the
-    // programme or verifier actually changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, isVerifier.data, programmeId, tick]);
+    // `recipients` is memoised from the indexed list, so this re-reads the
+    // awards when the index changes rather than on every render. `tick` is
+    // here to force that re-read after an attestation releases a tranche.
+  }, [client, isVerifier.data, recipients, tick]);
 
   const [selected, setSelected] = useState<Milestone | null>(null);
 
@@ -699,11 +701,29 @@ function ProgrammeQueue({
     );
   }
 
+  if (indexed.loading) return <Loading label="Loading the awards list" rows={2} />;
+
+  // A missing list is not a failed contract call, so it is shown as an empty
+  // state rather than an error: everything else on this screen still works.
+  if (indexed.error) {
+    return (
+      <Empty
+        title="The awards list is unavailable"
+        description="The published index could not be reached, so nobody can be listed here. Signing an attestation still works, and the list returns when the index does."
+        action={
+          <Button variant="secondary" size="sm" onClick={indexed.refetch}>
+            Try again
+          </Button>
+        }
+      />
+    );
+  }
+
   if (recipients.length === 0) {
     return (
       <Empty
-        title="No known recipients"
-        description="The queue is built from known recipient addresses until an indexer can list awards on-chain."
+        title="No awards in this programme yet"
+        description="This queue lists recipients who hold an award. It fills once applications are settled, within about ten minutes of the award being made."
       />
     );
   }
