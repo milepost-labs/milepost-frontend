@@ -1,8 +1,10 @@
 # Milepost frontend
 
-React 19 + TypeScript + Vite. Talks to the Soroban contracts through the
-generated bindings, which it installs from npm as `@milepost/*` like any other
-dependency. Their source lives in [`packages/`](../packages).
+The web app for [Milepost](https://github.com/milepost-labs/milepost), conditional disbursement on Stellar.
+React 19 + TypeScript + Vite. It talks to the Soroban contracts through the
+generated bindings, installed from npm as `@milepost/*` like any other
+dependency; their source lives in [`packages/`](https://github.com/milepost-labs/milepost/tree/main/packages) in the
+milepost repository.
 
 ## Running it
 
@@ -13,15 +15,16 @@ npm run dev
 
 **Against unreleased bindings.** `npm ci` installs the published versions that
 `package.json` pins, so a contract change is invisible here until it is
-released. After changing a contract and regenerating the bindings, run this from
-the repository root to use this checkout's bindings instead:
+released. To try one before then, clone [milepost](https://github.com/milepost-labs/milepost) next to this
+repository and, from the milepost checkout, run:
 
 ```sh
-./scripts/frontend-with-local-bindings.sh
+./scripts/frontend-with-local-bindings.sh ../milepost-frontend
 ```
 
-It leaves `package.json` and the lockfile untouched, and `npm ci` puts the
-published versions back.
+It builds the bindings from that checkout and installs them here, leaving
+`package.json` and the lockfile untouched; `npm ci` puts the published versions
+back. milepost's CI does the same for every one of its PRs.
 
 ```sh
 npm run build   # tsc -b && vite build
@@ -37,17 +40,23 @@ at runtime. Fix them rather than suppressing them.
 
 **Testing.** The suite mocks the contract clients — nothing may touch the
 network — and the reachability check fails on any module nothing imports. See
-the [frontend testing guide](../docs/frontend-testing-guide.md) for how to mock
+the [testing guide](docs/testing-guide.md) for how to mock
 a contract client, what the reachability check means when it fires, and which
 behaviours are worth testing.
 
+## Contributing and security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities privately, as
+[SECURITY.md](SECURITY.md) describes, never in a public issue.
+
 ## Contract data model
 
-The root [README](../README.md) covers what the protocol does, how money moves
-and the disbursement modes. [`docs/error-code-reference.md`](../docs/error-code-reference.md)
+The milepost [README](https://github.com/milepost-labs/milepost#readme) covers what the protocol does, how money
+moves and the disbursement modes.
+[`docs/error-code-reference.md`](https://github.com/milepost-labs/milepost/blob/main/docs/error-code-reference.md)
 lists every error each contract can return, with the cause and what a caller
-should do about it. The generated clients in [`packages/`](../packages) are the
-authority on the exact shapes.
+should do about it. The generated clients in
+[`packages/`](https://github.com/milepost-labs/milepost/tree/main/packages) are the authority on the exact shapes.
 
 ---
 
