@@ -48,7 +48,7 @@
   padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--border);
 }
-.ui-card__title { font-size: var(--text-lg); font-weight: var(--weight-semibold); margin: 0; }
+.ui-card__title { font-family: var(--font-display); font-size: var(--text-lg); font-weight: var(--weight-normal); margin: 0; }
 .ui-card__body { padding: var(--space-5); }
 .ui-card__footer {
   padding: var(--space-4) var(--space-5);
@@ -93,7 +93,7 @@
 .ui-badge--neutral { background: var(--surface-hover); color: var(--text-muted); border-color: var(--border); }
 .ui-badge--accent  { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
 .ui-badge--success { background: color-mix(in srgb, var(--success) 14%, transparent); color: var(--success); }
-.ui-badge--warning { background: color-mix(in srgb, var(--warning) 18%, transparent); color: hsl(32 90% 32%); }
+.ui-badge--warning { background: color-mix(in srgb, var(--warning) 18%, transparent); color: oklch(0.42 0.12 70); }
 .ui-badge--danger  { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); }
 
 .ui-table__scroll { width: 100%; border-radius: var(--radius-md); }

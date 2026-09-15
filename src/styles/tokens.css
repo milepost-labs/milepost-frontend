@@ -35,7 +35,7 @@
 
   /* Numeric figures line up in columns when tabular. Amounts are always
      compared vertically, so this matters more than it sounds. */
-  --font-numeric: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  --font-numeric: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -54,6 +54,7 @@
   --success: var(--color-success);
   --warning: var(--color-warning);
   --border: var(--surface-border);
+  --border-strong: var(--surface-border-strong);
   --surface: var(--surface-color);
   --surface-raised: var(--glass-bg);
 }
@@ -124,5 +125,7 @@
 
 .numeric {
   font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }

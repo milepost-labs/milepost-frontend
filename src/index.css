@@ -1,37 +1,39 @@
 @import './styles/tokens.css';
 
 :root {
-  /* Mature, Professional Color Palette */
-  
-  /* Primary Accent: Sophisticated Azure / Navy */
-  --hue-primary: 215;
-  --color-primary-light: hsl(215, 80%, 40%); /* Rich Blue */
-  --color-primary-dark: hsl(215, 90%, 65%);  /* Soft Sky Blue for dark mode */
+  /* Ground is warm paper, not a blue-grey off-white — the app is a ledger and
+     should read like one on a screen you stare at all day. */
+  --bg-color: oklch(0.985 0.004 85);
+  --surface-color: oklch(1 0 0);
+  --surface-hover: oklch(0.965 0.005 85);
+  --surface-border: oklch(0.905 0.006 265);
+  --surface-border-strong: oklch(0.83 0.008 265);
 
-  /* Surface and Background (Light Mode) */
-  --bg-color: hsl(210, 20%, 98%); /* Clean off-white */
-  --surface-color: hsl(0, 0%, 100%);
-  --surface-hover: hsl(210, 16%, 93%);
-  --surface-border: hsl(214, 32%, 91%);
-  
-  /* Typography Colors */
-  --text-main: hsl(222, 47%, 11%); /* Deep slate, almost black */
-  --text-muted: hsl(215, 16%, 47%); /* Professional gray */
-  
-  /* Status Colors */
-  --color-success: hsl(158, 73%, 33%);
-  --color-warning: hsl(38, 92%, 50%);
-  --color-error: hsl(348, 83%, 47%);
+  --text-main: oklch(0.24 0.015 265);
+  --text-muted: oklch(0.55 0.015 265);
 
-  /* Glassmorphism Variables */
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(226, 232, 240, 0.8);
-  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  
-  /* Typography Variables */
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  
-  /* Transition / Animation Variables */
+  /* Every accent sits at the same lightness and chroma and varies only in hue,
+     so no state can shout louder than another by accident. */
+  --hue-primary: 250;
+  --color-primary-light: oklch(0.48 0.13 250);
+  --color-primary-dark: oklch(0.70 0.13 250);
+  --color-success: oklch(0.48 0.13 160);
+  --color-warning: oklch(0.48 0.13 70);
+  --color-error: oklch(0.48 0.13 25);
+
+  /* Wash tints, for badges and callout panels. */
+  --wash-accent: oklch(0.955 0.022 250);
+  --wash-success: oklch(0.955 0.022 160);
+  --wash-warning: oklch(0.955 0.028 70);
+  --wash-error: oklch(0.955 0.022 25);
+
+  --glass-bg: oklch(1 0 0 / 0.86);
+  --glass-border: oklch(0.905 0.006 265 / 0.8);
+  --glass-shadow: 0 1px 2px oklch(0.24 0.015 265 / 0.05);
+
+  --font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+
   --transition-fast: 150ms ease-out;
   --transition-normal: 300ms ease-out;
 }
@@ -47,6 +49,7 @@
 
 body {
   font-family: var(--font-family);
+  font-size: 16px;
   background-color: var(--bg-color);
   color: var(--text-main);
   transition: background-color var(--transition-normal), color var(--transition-normal);
@@ -104,8 +107,9 @@ body {
 }
 
 h1, h2, h3, h4 {
-  font-weight: 600; /* Less bold, more refined */
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.1;
   margin-bottom: 1rem;
   letter-spacing: -0.01em;
 }
