@@ -8,7 +8,7 @@ import type { Client as Record } from '@milepost/record';
 
 /** Seeded testnet programme, used until listings exist. */
 export const DEMO_PROGRAMME_ID =
-  import.meta.env.VITE_PROGRAMME_ID || 'CD236SGR4CHW3N5WA5REW7CDLCS4ZLDEX6JVEAIHZK7NSN4W7WD7YDAL';
+  import.meta.env.VITE_PROGRAMME_ID || 'CD6X33SKLUEMANS67ID3LJL572FFGERMMJCIFRW7P7EKZQLH35XT67C6';
 
 export interface SorobanState {
   registry: Registry;
