@@ -23,7 +23,7 @@ npm run dev
 
 Then open http://localhost:5173.
 
-The app targets Stellar testnet. Two optional variables in `.env.local`, which
+The app targets Stellar testnet. Three optional variables in `.env.local`, which
 git ignores, override its defaults:
 
 ```env
@@ -31,7 +31,15 @@ git ignores, override its defaults:
 VITE_SOROBAN_RPC_URL=https://soroban-testnet.stellar.org
 # Contract id of the programme that pages fall back to. Default: the seeded testnet programme
 VITE_PROGRAMME_ID=
+# Published index that supplies the lists the contracts cannot answer, such as
+# who holds an award. Default: https://milepost-labs.github.io/milepost-indexer/v1
+VITE_INDEXER_URL=
 ```
+
+The index is built by [milepost-indexer](https://github.com/milepost-labs/milepost-indexer)
+and is advisory: every entry it lists is read back from the contract before the
+app treats it as fact, so a list that is stale, missing or wrong can only hide
+something, never show something false.
 
 **Pre-commit hook (opt-in).** `./scripts/install-hooks.sh` lints staged files
 with ESLint before each commit. Bypass it in an emergency with
