@@ -79,12 +79,14 @@ export function fetchAwards(programmeId: string): Promise<IndexedAward[]> {
 /**
  * How old `indexedAt` may be before the index counts as stale.
  *
- * The workflow runs hourly and GitHub delays or skips scheduled runs under
- * load, so anything shorter than a few hours would cry stale on an ordinary
- * late run. Three hours means two runs in a row were missed, which is a real
- * fault rather than a busy scheduler.
+ * The workflow asks to run hourly, but GitHub starts scheduled runs when it
+ * has capacity: across twelve consecutive days, a sibling repository's daily
+ * job started between 4 and 5.8 hours after its cron time, never on time. A
+ * threshold of a few hours would therefore report a healthy index as stopped
+ * almost every time. Twelve hours is past any delay observed, so crossing it
+ * means indexing has genuinely stopped rather than queued.
  */
-export const STALE_AFTER_MS = 3 * 60 * 60 * 1000;
+export const STALE_AFTER_MS = 12 * 60 * 60 * 1000;
 
 export function isStale(meta: IndexerMeta, now: number = Date.now()): boolean {
   const indexedAt = Date.parse(meta.indexedAt);
