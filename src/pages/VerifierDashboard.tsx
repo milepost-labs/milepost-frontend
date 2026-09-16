@@ -723,7 +723,7 @@ function ProgrammeQueue({
     return (
       <Empty
         title="No awards in this programme yet"
-        description="This queue lists recipients who hold an award. It fills once applications are settled, within about ten minutes of the award being made."
+        description="This queue lists recipients who hold an award. It fills once applications are settled and the published index catches up, which can take a few hours."
       />
     );
   }

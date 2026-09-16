@@ -4,8 +4,7 @@
  * The contracts store everything under per-address keys and keep no lists, so
  * there is no on-chain way to ask "who holds an award in this programme?".
  * [milepost-indexer](https://github.com/milepost-labs/milepost-indexer) reads
- * the events, rebuilds the lists and publishes them as static JSON every ten
- * minutes.
+ * the events, rebuilds the lists and publishes them as static JSON every hour.
  *
  * **A list here says where to look, never what is true.** Every entry must be
  * read back from the contract before the app shows it as fact: the index can
@@ -78,11 +77,16 @@ export function fetchAwards(programmeId: string): Promise<IndexedAward[]> {
 }
 
 /**
- * How old `indexedAt` may be before the index counts as stale. The workflow
- * runs every ten minutes and GitHub can delay a run, so an hour means it has
- * genuinely stopped rather than run late.
+ * How old `indexedAt` may be before the index counts as stale.
+ *
+ * The workflow asks to run hourly, but GitHub starts scheduled runs when it
+ * has capacity: across twelve consecutive days, a sibling repository's daily
+ * job started between 4 and 5.8 hours after its cron time, never on time. A
+ * threshold of a few hours would therefore report a healthy index as stopped
+ * almost every time. Twelve hours is past any delay observed, so crossing it
+ * means indexing has genuinely stopped rather than queued.
  */
-export const STALE_AFTER_MS = 60 * 60 * 1000;
+export const STALE_AFTER_MS = 12 * 60 * 60 * 1000;
 
 export function isStale(meta: IndexerMeta, now: number = Date.now()): boolean {
   const indexedAt = Date.parse(meta.indexedAt);
